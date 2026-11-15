@@ -1,0 +1,77 @@
+name: Verificar issues
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  issue-1-crud-postman:
+    name: "Issue 1 - CRUD y Postman"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar endpoints GET, POST, PUT y DELETE
+        run: |
+          for a in GetMapping PostMapping PutMapping DeleteMapping; do
+            grep -rq "@$a" src/main || { echo "Falta @$a"; exit 1; }
+          done
+      - name: Verificar coleccion de Postman
+        run: ls postman/*.json
+
+  issue-2-relaciones:
+    name: "Issue 2 - Relaciones en BD"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar relaciones JPA
+        run: |
+          grep -rqE "@(OneToMany|ManyToOne|ManyToMany|OneToOne)" src/main \
+            || { echo "No hay relaciones JPA"; exit 1; }
+
+  issue-3-calidad-errores:
+    name: "Issue 3 - Calidad y errores"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { java-version: '17', distribution: 'temurin', cache: maven }
+      - name: Verificar manejador global de errores
+        run: grep -rq "@RestControllerAdvice" src/main || { echo "Falta GlobalExceptionHandler"; exit 1; }
+      - name: Compilar
+        run: mvn -B -DskipTests compile
+
+  issue-4-docker-k8s:
+    name: "Issue 4 - Docker, Kubernetes y CI/CD"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { java-version: '17', distribution: 'temurin', cache: maven }
+      - name: Verificar archivos
+        run: ls Dockerfile k8s/deployment.yaml k8s/service.yaml
+      - name: Empaquetar y construir imagen
+        run: |
+          mvn -B -DskipTests package
+          docker build -t biblioteca-api:test .
+
+  issue-5-docs-swagger:
+    name: "Issue 5 - README y Swagger"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar Swagger y README
+        run: |
+          grep -q "springdoc" pom.xml || { echo "Falta springdoc en pom.xml"; exit 1; }
+          test "$(wc -l < README.md)" -ge 30 || { echo "README muy corto"; exit 1; }
+
+  issue-6-junit:
+    name: "Issue 6 - Pruebas JUnit"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { java-version: '17', distribution: 'temurin', cache: maven }
+      - name: Verificar que existan pruebas
+        run: find src/test -name "*Test*.java" | grep -q . || { echo "No hay pruebas"; exit 1; }
+      - name: Ejecutar pruebas
+        run: mvn -B test
