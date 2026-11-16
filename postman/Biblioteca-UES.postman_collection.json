@@ -732,6 +732,27 @@
             }
           ],
           "request": { "method": "GET", "url": "{{baseUrl}}/api/prestamos?estado=devuelto" }
+        },
+        {
+          "name": "3.6 Listar socios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Devuelve la lista de socios', function () {",
+                  "  const socios = pm.response.json();",
+                  "  pm.expect(socios).to.be.an('array');",
+                  "  pm.expect(socios.length).to.be.above(0);",
+                  "  pm.expect(socios[0]).to.have.property('numeroSocio');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/socios" }
         }
       ]
     }

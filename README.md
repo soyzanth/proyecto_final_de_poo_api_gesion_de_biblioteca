@@ -194,7 +194,7 @@ curl "http://localhost:8080/api/libros?disponible=true&autorId=2"
 
 ## Colección Postman
 
-Importar `postman/Biblioteca-UES.postman_collection.json`. Contiene **35 peticiones** organizadas en
+Importar `postman/Biblioteca-UES.postman_collection.json`. Contiene **36 peticiones** organizadas en
 3 carpetas, todas con pruebas automáticas (`pm.test`) sobre código de estado y contenido:
 
 1. **Flujo completo CRUD (20 peticiones):** crea autor, libro, socio y préstamo; consulta, actualiza,
@@ -202,7 +202,7 @@ Importar `postman/Biblioteca-UES.postman_collection.json`. Contiene **35 peticio
    devolución, comprueba que vuelve a estar disponible y elimina todo.
 2. **Casos de error (10 peticiones):** 400 por validación, 404 por recurso inexistente, 405 por método
    no permitido, 409 por ISBN duplicado y por eliminar un autor con libros.
-3. **Consultas de catálogo (5 peticiones):** filtros por disponibilidad, autor, título y estado del préstamo.
+3. **Consultas de catálogo (6 peticiones):** filtros por disponibilidad, autor, título y estado del préstamo, y listado de socios.
 
 Usa la variable `baseUrl` (`http://localhost:8080`). Ejecutar con el **Collection Runner** en el orden
 de las carpetas para dejar la base de datos limpia.
