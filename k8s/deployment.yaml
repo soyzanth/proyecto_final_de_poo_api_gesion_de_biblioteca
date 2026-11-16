@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: biblioteca-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: biblioteca-api
+  template:
+    metadata:
+      labels:
+        app: biblioteca-api
+    spec:
+      containers:
+        - name: biblioteca-api
+          image: biblioteca-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
