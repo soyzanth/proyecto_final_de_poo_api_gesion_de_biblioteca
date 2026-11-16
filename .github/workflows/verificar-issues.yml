@@ -83,22 +83,6 @@ jobs:
           echo "La API no arranco:"; cat app.log; exit 1
       - name: Flujo CRUD completo en Postman (GET, POST, PUT y DELETE de las 4 entidades)
         run: npx --yes newman@6 run postman/Biblioteca-UES.postman_collection.json --folder "1. Flujo completo CRUD (ejecutar en orden)"
-      - name: Marcar las casillas y cerrar la issue (check verde = resuelta)
-        if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          N=1
-          estado=$(gh issue view $N --json state --jq .state)
-          if [ "$estado" = "OPEN" ]; then
-            gh issue view $N --json body --jq .body | sed 's/^- \[ \]/- [x]/' > cuerpo.md
-            gh issue edit $N --body-file cuerpo.md
-            gh issue close $N --comment "Check verde en GitHub Actions (commit ${GITHUB_SHA::7}): todas las verificaciones de este issue pasaron. Casillas marcadas y issue cerrada automaticamente."
-          else
-            echo "Issue $N ya estaba cerrada"
-          fi
 
   # ---------------------------------------------------------------------------
   # Issue 2: Manejo de relaciones en la base de datos
@@ -156,22 +140,6 @@ jobs:
           jq -e 'keys | map(test("autor"; "i")) | any' libro.json
       - name: Consultas que usan las relaciones (filtros por autor y estado del prestamo)
         run: npx --yes newman@6 run postman/Biblioteca-UES.postman_collection.json --folder "3. Consultas de catalogo"
-      - name: Marcar las casillas y cerrar la issue (check verde = resuelta)
-        if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          N=2
-          estado=$(gh issue view $N --json state --jq .state)
-          if [ "$estado" = "OPEN" ]; then
-            gh issue view $N --json body --jq .body | sed 's/^- \[ \]/- [x]/' > cuerpo.md
-            gh issue edit $N --body-file cuerpo.md
-            gh issue close $N --comment "Check verde en GitHub Actions (commit ${GITHUB_SHA::7}): todas las verificaciones de este issue pasaron. Casillas marcadas y issue cerrada automaticamente."
-          else
-            echo "Issue $N ya estaba cerrada"
-          fi
 
   # ---------------------------------------------------------------------------
   # Issue 3: Calidad de codigo y manejo de errores
@@ -225,22 +193,6 @@ jobs:
           echo "La API no arranco:"; cat app.log; exit 1
       - name: Casos de error en Postman (400, 404, 405 y 409)
         run: npx --yes newman@6 run postman/Biblioteca-UES.postman_collection.json --folder "2. Casos de error"
-      - name: Marcar las casillas y cerrar la issue (check verde = resuelta)
-        if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          N=3
-          estado=$(gh issue view $N --json state --jq .state)
-          if [ "$estado" = "OPEN" ]; then
-            gh issue view $N --json body --jq .body | sed 's/^- \[ \]/- [x]/' > cuerpo.md
-            gh issue edit $N --body-file cuerpo.md
-            gh issue close $N --comment "Check verde en GitHub Actions (commit ${GITHUB_SHA::7}): todas las verificaciones de este issue pasaron. Casillas marcadas y issue cerrada automaticamente."
-          else
-            echo "Issue $N ya estaba cerrada"
-          fi
 
   # ---------------------------------------------------------------------------
   # Issue 4: Kubernetes y pipeline CI/CD completo
@@ -293,22 +245,6 @@ jobs:
           echo "$GH_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
           docker tag biblioteca-api:ci "$IMAGE:latest"
           docker push "$IMAGE:latest"
-      - name: Marcar las casillas y cerrar la issue (check verde = resuelta)
-        if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          N=4
-          estado=$(gh issue view $N --json state --jq .state)
-          if [ "$estado" = "OPEN" ]; then
-            gh issue view $N --json body --jq .body | sed 's/^- \[ \]/- [x]/' > cuerpo.md
-            gh issue edit $N --body-file cuerpo.md
-            gh issue close $N --comment "Check verde en GitHub Actions (commit ${GITHUB_SHA::7}): todas las verificaciones de este issue pasaron. Casillas marcadas y issue cerrada automaticamente."
-          else
-            echo "Issue $N ya estaba cerrada"
-          fi
 
   # ---------------------------------------------------------------------------
   # Issue 5: Documentacion final (README.md) y Swagger
@@ -366,22 +302,6 @@ jobs:
           code=$(curl -sL -o /dev/null -w '%{http_code}' http://localhost:8080/swagger-ui.html)
           echo "swagger-ui.html -> HTTP $code"
           [ "$code" = "200" ]
-      - name: Marcar las casillas y cerrar la issue (check verde = resuelta)
-        if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          N=5
-          estado=$(gh issue view $N --json state --jq .state)
-          if [ "$estado" = "OPEN" ]; then
-            gh issue view $N --json body --jq .body | sed 's/^- \[ \]/- [x]/' > cuerpo.md
-            gh issue edit $N --body-file cuerpo.md
-            gh issue close $N --comment "Check verde en GitHub Actions (commit ${GITHUB_SHA::7}): todas las verificaciones de este issue pasaron. Casillas marcadas y issue cerrada automaticamente."
-          else
-            echo "Issue $N ya estaba cerrada"
-          fi
 
   # ---------------------------------------------------------------------------
   # Issue 6: Pruebas unitarias con JUnit
@@ -410,19 +330,3 @@ jobs:
           total=$(grep -h -o 'tests="[0-9]*"' target/surefire-reports/*.xml | grep -o '[0-9]*' | paste -sd+ - | bc)
           echo "Pruebas ejecutadas: $total"
           [ "$total" -ge 20 ]
-      - name: Marcar las casillas y cerrar la issue (check verde = resuelta)
-        if: success() && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          N=6
-          estado=$(gh issue view $N --json state --jq .state)
-          if [ "$estado" = "OPEN" ]; then
-            gh issue view $N --json body --jq .body | sed 's/^- \[ \]/- [x]/' > cuerpo.md
-            gh issue edit $N --body-file cuerpo.md
-            gh issue close $N --comment "Check verde en GitHub Actions (commit ${GITHUB_SHA::7}): todas las verificaciones de este issue pasaron. Casillas marcadas y issue cerrada automaticamente."
-          else
-            echo "Issue $N ya estaba cerrada"
-          fi
